@@ -1,0 +1,4 @@
+# 生成物不计入 GitHub 语言统计
+demo/backend/parsers/sample_workbook.xlsx linguist-generated
+site/** linguist-generated
+docs/demo/** linguist-documentation
