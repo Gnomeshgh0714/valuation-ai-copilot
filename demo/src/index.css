@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root { color-scheme: dark; }
+body { @apply bg-zinc-950 text-zinc-200 antialiased; font-family: ui-sans-serif, system-ui, "PingFang SC", sans-serif; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.anim { animation: fadeUp .35s ease both; }
+
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.thinking::after { content: '▋'; animation: pulse-dot 1s infinite; @apply text-teal-400; }
