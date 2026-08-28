@@ -2,8 +2,6 @@
 
 > 为某国际地产咨询机构估价部设计的本地化 AI 系统：把估价师从 Excel 底稿、扫描合同、历史报告的重复劳动中释放出来——**单项目人工耗时从数天压缩到数小时**（设计目标）。
 
-**[🎮 在线交互 Demo](https://gnomeshgh0714.github.io/valuation-ai-copilot/demo/)** · 四大模块可独立运行（全合成数据，前端离线可玩，连上后端走真实 FastAPI 流水线） · [Demo 源码与架构说明](./demo/)
-
 ---
 
 ## 业务痛点
@@ -26,7 +24,23 @@
 2. **强制引用** — 输出必须附 chunk id，无引用句子直接拒收
 3. **数值强校验** — Critic Agent 把 AI 输出的每个数字与数据库比对，不一致打回重生成
 
-## 系统架构（四层）
+## 演示版架构（demo/）
+
+**真后端 + 真前端，不是静态页面**：FastAPI 提供 4 个 SSE 流式接口，RAG 检索是真实可跑的 pipeline（TF-IDF 向量 + BM25 + RRF 融合 + rerank），Excel 用 openpyxl 真实解析底稿，OCR 双通道校验为真实逻辑代码。前端连上后端时走真实流水线，离线时自动降级内置模拟引擎（保证评审零配置可玩）。
+
+```
+demo/backend/  FastAPI
+  ├─ main.py            4 个 SSE 接口：/api/parse-excel /api/ocr /api/search /api/report
+  ├─ rag/retriever.py   真实检索 pipeline（生产为 BGE-M3+pgvector，演示为轻量复刻）
+  ├─ parsers/           openpyxl 真实解析 + 外部链接可信度分级 + OCR 双通道校验
+  ├─ report_gen.py      Critic 数值强校验（逐数字与 DB 比对）
+  └─ data/              全合成数据（12 条可比案例 + 合成底稿）
+demo/src/      Vite + React 19 + TS + Tailwind，四模块 Tab，流式动画
+```
+
+生产版对应关系：Celery+Redis 异步队列、pgvector、Qwen2.5-14B——演示版接口结构与其一致，仅替换重量级组件。详见 [demo/README.md](./demo/README.md)。
+
+## 系统架构（生产，四层）
 
 ```mermaid
 flowchart TD
